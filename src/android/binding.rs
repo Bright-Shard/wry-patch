@@ -342,7 +342,12 @@ pub unsafe fn ipc(mut env: JNIEnv, _: JClass, url: JString, body: JString) {
       let url = url.to_string_lossy().to_string();
       let body = body.to_string_lossy().to_string();
       if let Some(ipc) = IPC.lock().unwrap().as_ref() {
-        (ipc.handler)(Request::builder().uri(url).body(body).unwrap())
+        (ipc.handler)(
+          Request::builder()
+            .uri(Uri::try_from(uri).unwrap_or_else(Uri::try_from("https://localhost").unwrap()))
+            .body(body)
+            .unwrap(),
+        )
       }
     }
     (Err(e), _) | (_, Err(e)) => {
