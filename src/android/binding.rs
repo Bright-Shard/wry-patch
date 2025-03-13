@@ -344,7 +344,7 @@ pub unsafe fn ipc(mut env: JNIEnv, _: JClass, url: JString, body: JString) {
       if let Some(ipc) = IPC.lock().unwrap().as_ref() {
         (ipc.handler)(
           Request::builder()
-            .uri(Uri::try_from(url).unwrap_or_else(Uri::try_from("https://localhost").unwrap()))
+            .uri(Uri::try_from(url).unwrap_or_else(|_| Uri::try_from("https://localhost").unwrap()))
             .body(body)
             .unwrap(),
         )
