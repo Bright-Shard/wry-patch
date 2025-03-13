@@ -14,7 +14,7 @@ use gtk::{
   glib::{self, translate::FromGlibPtrFull},
   prelude::*,
 };
-use http::Request;
+use http::{Request, Uri};
 use javascriptcore::ValueExt;
 use raw_window_handle::{HasWindowHandle, RawWindowHandle};
 #[cfg(any(debug_assertions, feature = "devtools"))]
@@ -540,7 +540,10 @@ impl InnerWebView {
         if let Some(ipc_handler) = &ipc_handler {
           ipc_handler(
             Request::builder()
-              .uri(webview.uri().unwrap().to_string())
+              .uri(
+                Uri::try_from(webview.uri().unwrap().to_string())
+                  .unwrap_or_else(|_| Uri::try_from("https://localhost").unwrap()),
+              )
               .body(js.to_string())
               .unwrap(),
           );
